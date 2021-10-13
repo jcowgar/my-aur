@@ -1,0 +1,33 @@
+# Maintainer: Jeremy Cowgar <jeremy@cowgar.com> (https://jeremycowgar.com)
+
+pkgname=resilio-sync
+pkgver=2.7.2.1375
+pkgrel=1
+pkgdesc="a fast, reliable, and simple file sync and share solution powered by P2P technology"
+arch=('x86_64')
+url="https://download-cdn.resilio.com"
+license=('custom')
+depends=("glibc>=2.28-4")
+optdepends=()
+conflicts=()
+replaces=()
+source=("https://download-cdn.resilio.com/${pkgver}/Debian/${pkgname}_${pkgver}-${pkgrel}_amd64.deb")
+sha256sums=('ef04212bcbd4defbdc39e71bc9db8f91d677a4f82f6445cbe7b89d7ab5c59578')
+noextract=("${pkgname}_${pkgver}-${pkgrel}_amd64.deb")
+install="${pkgname}.install"
+
+package() {
+  bsdtar -O -xf "${pkgname}_${pkgver}-${pkgrel}_amd64.deb" data.tar.xz | bsdtar -C "${pkgdir}" -xJf -
+
+  # Permissions fix
+  find "${pkgdir}" -type d -exec chmod 755 {} \;
+
+  # Move system systemd file
+  mv "${pkgdir}/lib/systemd/system" "${pkgdir}/usr/lib/systemd"
+  rmdir "${pkgdir}/lib/systemd" "${pkgdir}/lib"
+
+  # Move license
+  install -dm755 "${pkgdir}/usr/share/licenses/${pkgname}"
+  mv "${pkgdir}/usr/share/doc/${pkgname}/LICENSE.TXT" "${pkgdir}/usr/share/licenses/${pkgname}"
+  ln -s "/usr/share/licenses/${pkgname}/LICENSE.TXT" "${pkgdir}/usr/share/doc/${pkgname}/LICENSE.TXT"
+}

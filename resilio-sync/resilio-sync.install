@@ -1,0 +1,7 @@
+post_install() {
+  id rslsync > /dev/null
+
+  if [ $? -ne 0 ]; then
+    useradd -M -c "Resilio Sync" -d /var/lib/resilio-sync -s /usr/bin/nologin rslsync
+  fi
+}
